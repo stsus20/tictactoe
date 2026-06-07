@@ -13,41 +13,90 @@ interface CellProps {
 
 const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, disabled, size }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (value) {
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 1.2,
-          duration: 120,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 120,
-          useNativeDriver: true,
-        }),
+      Animated.parallel([
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 1.3,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(rotateAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(glowAnim, {
+              toValue: 1,
+              duration: 800,
+              useNativeDriver: false,
+            }),
+            Animated.timing(glowAnim, {
+              toValue: 0,
+              duration: 800,
+              useNativeDriver: false,
+            }),
+          ])
+        ),
       ]).start();
     }
   }, [value]);
 
   const handlePress = () => {
     if (!disabled && !value) {
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 0.9,
-          duration: 70,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 70,
-          useNativeDriver: true,
-        }),
+      Animated.parallel([
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 0.85,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1.2,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(rotateAnim, {
+            toValue: 1,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+        ]),
       ]).start();
       onPress();
     }
   };
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  const glowRadius = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [8, 20],
+  });
 
   const cellStyle = [
     styles.cell,
@@ -60,9 +109,20 @@ const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, d
       style={cellStyle}
       onPress={handlePress}
       disabled={disabled}
-      activeOpacity={0.8}
+      activeOpacity={0.9}
     >
-      <Animated.Text style={[styles.text, { transform: [{ scale: scaleAnim }] }, isWinningCell && styles.winningText]}>
+      <Animated.Text style={[
+        styles.text,
+        {
+          transform: [
+            { scale: scaleAnim },
+            { rotateZ: rotation }
+          ],
+          textShadowRadius: glowRadius,
+          textShadowColor: value === 'X' ? colors.neon2 : colors.neon3,
+        },
+        isWinningCell && styles.winningText
+      ]}>
         {value}
       </Animated.Text>
     </TouchableOpacity>
@@ -73,23 +133,34 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: colors.cellBorder,
     backgroundColor: colors.cellBackground,
+    shadowColor: colors.cellBorder,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 8,
+    elevation: 8,
   },
   winningCell: {
-    backgroundColor: colors.winner,
+    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    borderColor: colors.winner,
+    shadowColor: colors.winner,
+    shadowOpacity: 1,
   },
   text: {
-    fontSize: 42,
-    fontWeight: '800',
+    fontSize: 52,
+    fontWeight: '900',
     color: colors.textPrimary,
-    textShadowColor: 'rgba(0,0,0,0.15)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 3,
+    textShadowColor: colors.primary,
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+    fontFamily: 'Courier New',
   },
   winningText: {
-    color: colors.buttonText,
+    color: colors.winner,
+    textShadowColor: colors.winner,
+    textShadowRadius: 15,
   },
 });
 

@@ -60,7 +60,9 @@ const Timer: React.FC<TimerProps> = ({ seconds, isActive }) => {
     return `00:${secs.toString().padStart(2, '0')}`;
   };
 
-  const timerColor = seconds <= 5 ? colors.secondary : colors.timerBackground;
+  const timerColor = seconds <= 5 ? colors.timerDanger : colors.timerBackground;
+  const timerBorder = seconds <= 5 ? colors.timerDanger : colors.accent;
+  const glow = seconds <= 5 ? colors.timerDanger : colors.accent;
 
   return (
     <Animated.View
@@ -68,38 +70,44 @@ const Timer: React.FC<TimerProps> = ({ seconds, isActive }) => {
         styles.container,
         {
           backgroundColor: timerColor,
+          borderColor: timerBorder,
+          shadowColor: glow,
           transform: [{ scale: pulseAnim }, { translateX: shakeAnim }],
         },
       ]}
     >
-      <Text style={styles.label}>Tiempo</Text>
-      <Text style={styles.time}>{formatTime(seconds)}</Text>
+      <Text style={styles.label}>TIEMPO</Text>
+      <Text style={[styles.time, { color: glow }]}>{formatTime(seconds)}</Text>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 6,
-    paddingHorizontal: 18,
-    borderRadius: 30,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 10,
   },
   label: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#fff',
+    fontSize: 11,
+    fontWeight: '900',
+    color: colors.textPrimary,
+    letterSpacing: 1.5,
   },
   time: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-    letterSpacing: 1,
+    fontSize: 22,
+    fontWeight: '900',
+    letterSpacing: 2,
+    textShadowColor: 'rgba(0, 255, 136, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 6,
+    fontFamily: 'Courier New',
   },
 });
 

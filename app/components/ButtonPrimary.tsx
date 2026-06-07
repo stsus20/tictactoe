@@ -23,13 +23,13 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
   const handlePressIn = () => {
     Animated.parallel([
       Animated.spring(scaleAnim, {
-        toValue: 0.96,
+        toValue: 0.93,
         useNativeDriver: true,
         speed: 50,
       }),
       Animated.timing(glowAnim, {
         toValue: 1,
-        duration: 100,
+        duration: 150,
         useNativeDriver: false,
       }),
     ]).start();
@@ -51,10 +51,12 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
     onPress();
   };
 
-  const backgroundColor = variant === 'primary' ? colors.buttonBackground : colors.secondary;
+  const backgroundColor = variant === 'primary' ? colors.buttonBackground : colors.accent;
+  const textColor = variant === 'primary' ? colors.buttonText : '#000000';
+  const glowColor = variant === 'primary' ? colors.buttonBackground : colors.accent;
   const glowOpacity = glowAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 0.3],
+    outputRange: [0, 0.4],
   });
 
   return (
@@ -64,20 +66,25 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
-        style={[styles.button, { backgroundColor }]}
+        style={[styles.button, { 
+          backgroundColor,
+          borderColor: glowColor,
+          shadowColor: glowColor,
+        }]}
       >
         <Animated.View
           style={[
             styles.glow,
             {
               opacity: glowOpacity,
+              backgroundColor: glowColor,
             },
           ]}
         />
         {loading ? (
-          <ActivityIndicator color={colors.buttonText} />
+          <ActivityIndicator color={textColor} />
         ) : (
-          <Text style={styles.text}>{title}</Text>
+          <Text style={[styles.text, { color: textColor }]}>{title}</Text>
         )}
       </TouchableOpacity>
     </Animated.View>
@@ -88,16 +95,16 @@ const styles = StyleSheet.create({
   button: {
     paddingVertical: 14,
     paddingHorizontal: 32,
-    borderRadius: 50,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
     minWidth: 160,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
+    borderWidth: 2,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+    elevation: 12,
   },
   glow: {
     position: 'absolute',
@@ -105,14 +112,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'white',
-    borderRadius: 50,
+    borderRadius: 8,
   },
   text: {
-    color: colors.buttonText,
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 0.8,
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
 });
 
