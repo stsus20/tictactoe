@@ -1,4 +1,3 @@
-// components/ButtonPrimary.tsx
 import React, { useRef } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Animated } from 'react-native';
 import { colors } from '../constants/colors';

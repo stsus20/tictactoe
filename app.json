@@ -5,7 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.yourcompany.tictactoe"
@@ -16,8 +18,13 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "feaf85ac-def1-4311-be32-f3c1658d4b2f"
       }
     },
-    "plugins": ["expo-router"]
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
