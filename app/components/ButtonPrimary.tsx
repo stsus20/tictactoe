@@ -1,7 +1,5 @@
-
 import React, { useRef } from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, Animated } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Opcional: añade gradiente, si no quieres dependencia, elimínalo
 import { colors } from '../constants/colors';
 
 interface ButtonPrimaryProps {
@@ -54,11 +52,6 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
   };
 
   const backgroundColor = variant === 'primary' ? colors.buttonBackground : colors.secondary;
-  const gradientColors =
-    variant === 'primary'
-      ? [colors.buttonBackground, '#2980b9']
-      : [colors.secondary, '#c0392b'];
-
   const glowOpacity = glowAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [0, 0.3],
@@ -71,22 +64,21 @@ const ButtonPrimary: React.FC<ButtonPrimaryProps> = ({
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         disabled={disabled || loading}
+        style={[styles.button, { backgroundColor }]}
       >
-        <LinearGradient colors={gradientColors} style={styles.button} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
-          <Animated.View
-            style={[
-              styles.glow,
-              {
-                opacity: glowOpacity,
-              },
-            ]}
-          />
-          {loading ? (
-            <ActivityIndicator color={colors.buttonText} />
-          ) : (
-            <Text style={styles.text}>{title}</Text>
-          )}
-        </LinearGradient>
+        <Animated.View
+          style={[
+            styles.glow,
+            {
+              opacity: glowOpacity,
+            },
+          ]}
+        />
+        {loading ? (
+          <ActivityIndicator color={colors.buttonText} />
+        ) : (
+          <Text style={styles.text}>{title}</Text>
+        )}
       </TouchableOpacity>
     </Animated.View>
   );
