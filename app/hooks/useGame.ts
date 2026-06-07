@@ -67,57 +67,50 @@ export const useGame = (): UseGameReturn => {
     };
   }, [currentPlayer, isGameActive, isMatchOver, round]);
 
-  const resetTimer = useCallback(() => {
+  const changeTurn = useCallback(() => {
+    setCurrentPlayer((prev) => (prev === 'X' ? 'O' : 'X'));
     setTimer(TURN_TIME_SECONDS);
   }, []);
 
-  const changeTurn = useCallback(() => {
-    setCurrentPlayer((prev) => (prev === 'X' ? 'O' : 'X'));
-    resetTimer();
-  }, [resetTimer]);
-
-  const evaluateRoundEnd = useCallback(
-    (newBoard: BoardState) => {
-      const { winner, winningLine: line } = checkWinner(newBoard);
-      if (winner) {
-        setRoundWinner(winner);
-        setWinningLine(line);
-        if (winner !== 'draw') {
-          setScores((prev) => {
-            const newScores = {
-              ...prev,
-              [winner]: prev[winner] + 1,
-            };
-            if (newScores[winner] >= WINNING_SCORE) {
-              setGameWinner(winner);
-            }
-            return newScores;
-          });
-        } else {
-          setTies((prev) => prev + 1);
-        }
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        return true;
-      }
-      return false;
-    },
-    []
-  );
-
   const makeMove = useCallback(
     (index: number) => {
-      if (!isGameActive || isMatchOver || board[index] !== null) return;
+      if (!isGameActive || isMatchOver || board[index] !== null) {
+        return;
+      }
 
-      const newBoard = [...board];
-      newBoard[index] = currentPlayer;
-      setBoard(newBoard);
+      try {
+        const newBoard = [...board];
+        newBoard[index] = currentPlayer;
+        setBoard(newBoard);
 
-      const roundEnded = evaluateRoundEnd(newBoard);
-      if (roundEnded) return;
+        const { winner, winningLine: line } = checkWinner(newBoard);
+        if (winner) {
+          setRoundWinner(winner);
+          setWinningLine(line);
+          if (winner !== 'draw') {
+            setScores((prev) => {
+              const updatedScores = { ...prev };
+              if (winner === 'X' || winner === 'O') {
+                updatedScores[winner] = prev[winner] + 1;
+                if (updatedScores[winner] >= WINNING_SCORE) {
+                  setGameWinner(winner);
+                }
+              }
+              return updatedScores;
+            });
+          } else {
+            setTies((prev) => prev + 1);
+          }
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return;
+        }
 
-      changeTurn();
+        changeTurn();
+      } catch (error) {
+        console.error('Error in makeMove:', error);
+      }
     },
-    [board, currentPlayer, isGameActive, isMatchOver, evaluateRoundEnd, changeTurn]
+    [board, currentPlayer, isGameActive, isMatchOver, changeTurn]
   );
 
   const nextRound = useCallback(() => {
@@ -128,9 +121,9 @@ export const useGame = (): UseGameReturn => {
     setRoundWinner(null);
     setWinningLine(null);
     setRound((prev) => prev + 1);
-    resetTimer();
+    setTimer(TURN_TIME_SECONDS);
     if (intervalRef.current) clearInterval(intervalRef.current);
-  }, [isMatchOver, resetTimer]);
+  }, [isMatchOver]);
 
   const resetGame = useCallback(() => {
     setBoard(getInitialBoard());
@@ -141,9 +134,9 @@ export const useGame = (): UseGameReturn => {
     setRoundWinner(null);
     setGameWinner(null);
     setWinningLine(null);
-    resetTimer();
+    setTimer(TURN_TIME_SECONDS);
     if (intervalRef.current) clearInterval(intervalRef.current);
-  }, [resetTimer]);
+  }, []);
 
   return {
     board,

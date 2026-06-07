@@ -90,21 +90,22 @@ export default function GameScreen() {
 
         <RoundInfo round={round} currentPlayer={currentPlayer} winner={roundWinner} ties={ties} />
 
-        <View style={styles.boardContainer}>
-          <Animated.View
-            style={{
+        <Animated.View
+          style={[
+            styles.boardWrapper,
+            {
               transform: [{ scale: boardScale }],
               opacity: boardOpacity,
-            }}
-          >
-            <Board
-              board={board}
-              onCellPress={makeMove}
-              winningLine={winningLine}
-              disabled={!isGameActive || isMatchOver}
-            />
-          </Animated.View>
-        </View>
+            },
+          ]}
+        >
+          <Board
+            board={board}
+            onCellPress={makeMove}
+            winningLine={winningLine}
+            disabled={!isGameActive || isMatchOver}
+          />
+        </Animated.View>
 
         {gameWinner && (
           <Animated.View
@@ -151,59 +152,58 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   content: {
     flex: 1,
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingVertical: 16,
+    justifyContent: 'space-between',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
     width: '100%',
   },
-  boardContainer: {
-    justifyContent: 'center',
+  boardWrapper: {
+    width: '100%',
     alignItems: 'center',
-    marginVertical: 20,
+    justifyContent: 'center',
+    marginVertical: 12,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: 16,
     width: '100%',
   },
   celebrationBanner: {
-    marginVertical: 16,
+    marginVertical: 12,
     backgroundColor: 'rgba(0, 255, 136, 0.15)',
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
     width: '90%',
+    alignSelf: 'center',
     borderWidth: 2,
     borderColor: colors.primary,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowRadius: 12,
+    elevation: 10,
   },
   celebrationText: {
     color: colors.primary,
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '900',
     textAlign: 'center',
     letterSpacing: 1,
     textShadowColor: colors.primary,
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 12,
+    textShadowRadius: 10,
   },
 });
