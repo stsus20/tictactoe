@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import ButtonPrimary from '../components/ButtonPrimary';
-import { colors } from '../constants/colors';
+import ButtonPrimary from './components/ButtonPrimary';
+import { colors } from './constants/colors';
 
 export default function HomeScreen() {
   const router = useRouter();
