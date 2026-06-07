@@ -1,3 +1,4 @@
+// components/Board.tsx
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Dimensions, Animated } from 'react-native';
 import Cell from './Cell';
