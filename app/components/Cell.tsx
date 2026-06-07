@@ -122,8 +122,8 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
   ];
 
   return (
-    <TouchableOpacity
-      style={cellStyle}
+    <AnimatedTouchableOpacity
+      style={[cellStyle, { borderColor: glowBorder, shadowRadius: glowRadius, shadowOpacity: glowOpacity }]}
       onPress={handlePress}
       disabled={disabled}
       activeOpacity={0.9}
@@ -144,7 +144,7 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
       ]}>
         {value}
       </Animated.Text>
-    </TouchableOpacity>
+    </AnimatedTouchableOpacity>
   );
 });
 
