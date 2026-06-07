@@ -12,12 +12,10 @@ interface BoardProps {
   onCellPress: (index: number) => void;
   winningLine: number[] | null;
   disabled: boolean;
-  currentPlayer: 'X' | 'O';
 }
 
-const Board: React.FC<BoardProps> = React.memo(({ board, onCellPress, winningLine, disabled, currentPlayer }) => {
+const Board: React.FC<BoardProps> = React.memo(({ board, onCellPress, winningLine, disabled }) => {
   const boardAnim = useRef(new Animated.Value(0)).current;
-  const lineAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.spring(boardAnim, {
@@ -28,26 +26,7 @@ const Board: React.FC<BoardProps> = React.memo(({ board, onCellPress, winningLin
     }).start();
   }, []);
 
-  useEffect(() => {
-    Animated.sequence([
-      Animated.timing(lineAnim, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-      Animated.timing(lineAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: false,
-      }),
-    ]).start();
-  }, [board]);
-
-  const activeLineColor = currentPlayer === 'X' ? colors.neon2 : colors.neon3;
-  const lineColor = lineAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [colors.neon1, activeLineColor],
-  });
+  // rely on cell borders for internal grid lines; no overlay animations
 
   return (
     <Animated.View
@@ -71,10 +50,7 @@ const Board: React.FC<BoardProps> = React.memo(({ board, onCellPress, winningLin
         />
       ))}
 
-      <Animated.View style={[styles.gridLine, styles.verticalLine, { backgroundColor: lineColor }]} />
-      <Animated.View style={[styles.gridLine, styles.verticalLineSecondary, { backgroundColor: lineColor }]} />
-      <Animated.View style={[styles.gridLine, styles.horizontalLine, { backgroundColor: lineColor }]} />
-      <Animated.View style={[styles.gridLine, styles.horizontalLineSecondary, { backgroundColor: lineColor }]} />
+      {/* internal grid handled by cell borders; overlay lines removed */}
     </Animated.View>
   );
 });
@@ -95,30 +71,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
-  gridLine: {
-    position: 'absolute',
-    width: 2,
-    height: '100%',
-    opacity: 0.9,
-  },
-  verticalLine: {
-    left: '33.3333%',
-  },
-  verticalLineSecondary: {
-    left: '66.6667%',
-  },
-  horizontalLine: {
-    top: '33.3333%',
-    width: '100%',
-    height: 2,
-    left: 0,
-  },
-  horizontalLineSecondary: {
-    top: '66.6667%',
-    width: '100%',
-    height: 2,
-    left: 0,
-  },
+  // overlay grid styles removed
 });
 
 export default Board;
