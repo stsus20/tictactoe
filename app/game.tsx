@@ -104,6 +104,7 @@ export default function GameScreen() {
             onCellPress={makeMove}
             winningLine={winningLine}
             disabled={!isGameActive || isMatchOver}
+            currentPlayer={currentPlayer}
           />
         </Animated.View>
 

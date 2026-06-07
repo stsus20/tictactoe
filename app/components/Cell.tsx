@@ -3,18 +3,20 @@ import { TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
 import { CellValue } from '../types/game';
 import { colors } from '../constants/colors';
 
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
 interface CellProps {
   index: number;
   value: CellValue;
   onPress: () => void;
   isWinningCell: boolean;
   disabled: boolean;
-  cellSize: number;
 }
 
-const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinningCell, disabled, cellSize }) => {
+const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinningCell, disabled }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (value) {
@@ -36,6 +38,18 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
             toValue: 1,
             duration: 400,
             useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(glowAnim, {
+            toValue: 1,
+            duration: 140,
+            useNativeDriver: false,
+          }),
+          Animated.timing(glowAnim, {
+            toValue: 0,
+            duration: 240,
+            useNativeDriver: false,
           }),
         ]),
       ]).start();
@@ -83,6 +97,20 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
     outputRange: ['0deg', '360deg'],
   });
 
+  const glowColor = value === 'X' ? colors.neon2 : value === 'O' ? colors.neon3 : colors.neon1;
+  const glowBorder = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [colors.neon1, glowColor],
+  });
+  const glowRadius = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [6, 18],
+  });
+  const glowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.2, 0.9],
+  });
+
   const isRightColumn = index % 3 === 2;
   const isBottomRow = index >= 6;
 
@@ -95,7 +123,7 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
 
   return (
     <TouchableOpacity
-      style={[cellStyle, { width: cellSize, height: cellSize }]}
+      style={cellStyle}
       onPress={handlePress}
       disabled={disabled}
       activeOpacity={0.9}
@@ -124,15 +152,18 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRightWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: colors.cellBorder,
-    backgroundColor: colors.cellBackground,
-    shadowColor: colors.cellBorder,
+    flexBasis: '33.3333%',
+    maxWidth: '33.3333%',
+    aspectRatio: 1,
+    borderRightWidth: 1.5,
+    borderBottomWidth: 1.5,
+    borderColor: colors.neon1,
+    backgroundColor: 'rgba(3, 6, 30, 0.85)',
+    shadowColor: colors.neon1,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.2,
     shadowRadius: 6,
-    elevation: 4,
+    elevation: 2,
   },
   noRightBorder: {
     borderRightWidth: 0,
