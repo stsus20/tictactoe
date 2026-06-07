@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions, Animated } from 'react-native';
+import { StyleSheet, Dimensions, Animated } from 'react-native';
 import Cell from './Cell';
 import { BoardState } from '../types/game';
+import { colors } from '../constants/colors';
 
 const { width } = Dimensions.get('window');
-const BOARD_SIZE = width * 0.8;
-const CELL_SIZE = BOARD_SIZE / 3;
+const BOARD_SIZE = Math.floor(width * 0.8);
 
 interface BoardProps {
   board: BoardState;
@@ -40,11 +40,11 @@ const Board: React.FC<BoardProps> = React.memo(({ board, onCellPress, winningLin
       {board.map((value, index) => (
         <Cell
           key={index}
+          index={index}
           value={value}
           onPress={() => onCellPress(index)}
           isWinningCell={winningLine?.includes(index) || false}
           disabled={disabled || value !== null}
-          size={CELL_SIZE}
         />
       ))}
     </Animated.View>
@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     backgroundColor: '#0d1b2a',
     borderRadius: 16,
-    overflow: 'hidden',
-    borderWidth: 3,
-    borderColor: '#00ff88',
-    shadowColor: '#00ff88',
+    padding: 2,
+    borderWidth: 2,
+    borderColor: colors.neon1,
+    shadowColor: colors.neon1,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 16,

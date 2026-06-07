@@ -4,14 +4,14 @@ import { CellValue } from '../types/game';
 import { colors } from '../constants/colors';
 
 interface CellProps {
+  index: number;
   value: CellValue;
   onPress: () => void;
   isWinningCell: boolean;
   disabled: boolean;
-  size: number;
 }
 
-const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, disabled, size }) => {
+const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinningCell, disabled }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
@@ -38,20 +38,18 @@ const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, d
             useNativeDriver: true,
           }),
         ]),
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(glowAnim, {
-              toValue: 1,
-              duration: 800,
-              useNativeDriver: false,
-            }),
-            Animated.timing(glowAnim, {
-              toValue: 0,
-              duration: 800,
-              useNativeDriver: false,
-            }),
-          ])
-        ),
+        Animated.sequence([
+          Animated.timing(glowAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: false,
+          }),
+          Animated.timing(glowAnim, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: false,
+          }),
+        ]),
       ]).start();
     }
   }, [value]);
@@ -98,9 +96,13 @@ const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, d
     outputRange: [8, 20],
   });
 
+  const isRightColumn = index % 3 === 2;
+  const isBottomRow = index >= 6;
+
   const cellStyle = [
     styles.cell,
-    { width: size, height: size },
+    isRightColumn && styles.noRightBorder,
+    isBottomRow && styles.noBottomBorder,
     isWinningCell && styles.winningCell,
   ];
 
@@ -133,17 +135,26 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
+    flexBasis: '33.333%',
+    aspectRatio: 1,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
     borderColor: colors.cellBorder,
     backgroundColor: colors.cellBackground,
     shadowColor: colors.cellBorder,
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  noRightBorder: {
+    borderRightWidth: 0,
+  },
+  noBottomBorder: {
+    borderBottomWidth: 0,
   },
   winningCell: {
-    backgroundColor: 'rgba(0, 255, 136, 0.15)',
+    backgroundColor: 'rgba(0, 255, 136, 0.12)',
     borderColor: colors.winner,
     shadowColor: colors.winner,
     shadowOpacity: 1,
