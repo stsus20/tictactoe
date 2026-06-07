@@ -13,7 +13,6 @@ interface CellProps {
 
 const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, disabled, size }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const innerShadow = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (value) {
@@ -66,7 +65,6 @@ const Cell: React.FC<CellProps> = React.memo(({ value, onPress, isWinningCell, d
       <Animated.Text style={[styles.text, { transform: [{ scale: scaleAnim }] }, isWinningCell && styles.winningText]}>
         {value}
       </Animated.Text>
-      {!value && <View style={styles.emptyShadow} />}
     </TouchableOpacity>
   );
 });
@@ -78,7 +76,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.cellBorder,
     backgroundColor: colors.cellBackground,
-    position: 'relative',
   },
   winningCell: {
     backgroundColor: colors.winner,
@@ -93,14 +90,6 @@ const styles = StyleSheet.create({
   },
   winningText: {
     color: colors.buttonText,
-  },
-  emptyShadow: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.02)',
   },
 });
 

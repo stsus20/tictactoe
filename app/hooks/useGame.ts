@@ -34,19 +34,17 @@ export const useGame = (): UseGameReturn => {
   const [gameWinner, setGameWinner] = useState<Player | null>(null);
   const [winningLine, setWinningLine] = useState<number[] | null>(null);
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const isGameActive = roundWinner === null;
   const isMatchOver = gameWinner !== null;
 
-  // Limpiar intervalo al desmontar
   useEffect(() => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, []);
 
-  // Manejo del temporizador
   useEffect(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
 
@@ -54,7 +52,6 @@ export const useGame = (): UseGameReturn => {
       intervalRef.current = setInterval(() => {
         setTimer((prev) => {
           if (prev <= 1) {
-            // Tiempo agotado: cambiar turno
             clearInterval(intervalRef.current!);
             intervalRef.current = null;
             changeTurn();

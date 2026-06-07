@@ -4,6 +4,8 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Player } from '../types/game';
 import { colors } from '../constants/colors';
 
+
+
 interface ScoreBoardProps {
   scores: { X: number; O: number };
   currentPlayer: Player;

@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, SafeAreaView, Animated, Text } from 'react-native';
-import Board from '../components/Board';
-import ScoreBoard from '../components/ScoreBoard';
-import Timer from '../components/Timer';
-import RoundInfo from '../components/RoundInfo';
-import WinnerModal from '../components/WinnerModal';
-import ButtonPrimary from '../components/ButtonPrimary';
-import { useGame } from '../hooks/useGame';
-import { colors } from '../constants/colors';
+import Board from './components/Board';
+import ScoreBoard from './components/ScoreBoard';
+import Timer from './components/Timer';
+import RoundInfo from './components/RoundInfo';
+import WinnerModal from './components/WinnerModal';
+import ButtonPrimary from './components/ButtonPrimary';
+import { useGame } from './hooks/useGame';
+import { colors } from './constants/colors';
 
 export default function GameScreen() {
   const {
@@ -27,7 +27,6 @@ export default function GameScreen() {
     resetGame,
   } = useGame();
 
-  // Animación de entrada del tablero
   const boardScale = useRef(new Animated.Value(0.8)).current;
   const boardOpacity = useRef(new Animated.Value(0)).current;
 
@@ -47,7 +46,6 @@ export default function GameScreen() {
     ]).start();
   }, [round]);
 
-  // Animación de celebración final
   const celebrationAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     if (gameWinner) {

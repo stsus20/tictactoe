@@ -1,11 +1,12 @@
-// app/index.tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import ButtonPrimary from '../components/ButtonPrimary';
 import { colors } from '../constants/colors';
 
 export default function HomeScreen() {
+  const router = useRouter();
+
   const handleStart = () => {
     router.push('/game');
   };
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   title: {
-    fontSize: 56,
+    fontSize: 52,
     fontWeight: '800',
     color: colors.primary,
     textAlign: 'center',
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '500',
     color: colors.textSecondary,
     textAlign: 'center',
