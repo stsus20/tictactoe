@@ -9,12 +9,12 @@ interface CellProps {
   onPress: () => void;
   isWinningCell: boolean;
   disabled: boolean;
+  cellSize: number;
 }
 
-const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinningCell, disabled }) => {
+const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinningCell, disabled, cellSize }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (value) {
@@ -38,62 +38,49 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
             useNativeDriver: true,
           }),
         ]),
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0,
-            duration: 500,
-            useNativeDriver: false,
-          }),
-        ]),
       ]).start();
     }
   }, [value]);
 
   const handlePress = () => {
     if (!disabled && !value) {
-      Animated.parallel([
-        Animated.sequence([
-          Animated.timing(scaleAnim, {
-            toValue: 0.85,
-            duration: 100,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scaleAnim, {
-            toValue: 1.2,
-            duration: 200,
-            useNativeDriver: true,
-          }),
-          Animated.timing(scaleAnim, {
-            toValue: 1,
-            duration: 150,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.sequence([
-          Animated.timing(rotateAnim, {
-            toValue: 1,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-        ]),
-      ]).start();
-      onPress();
+      try {
+        Animated.parallel([
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 0.85,
+              duration: 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1.2,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 150,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.sequence([
+            Animated.timing(rotateAnim, {
+              toValue: 1,
+              duration: 400,
+              useNativeDriver: true,
+            }),
+          ]),
+        ]).start();
+        onPress();
+      } catch (error) {
+        console.error('Error in cell press:', error);
+      }
     }
   };
 
   const rotation = rotateAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
-  });
-
-  const glowRadius = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [8, 20],
   });
 
   const isRightColumn = index % 3 === 2;
@@ -108,7 +95,7 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
 
   return (
     <TouchableOpacity
-      style={cellStyle}
+      style={[cellStyle, { width: cellSize, height: cellSize }]}
       onPress={handlePress}
       disabled={disabled}
       activeOpacity={0.9}
@@ -120,8 +107,10 @@ const Cell: React.FC<CellProps> = React.memo(({ index, value, onPress, isWinning
             { scale: scaleAnim },
             { rotateZ: rotation }
           ],
-          textShadowRadius: glowRadius,
+          color: value === 'X' ? colors.neon2 : (value === 'O' ? colors.neon3 : colors.textPrimary),
           textShadowColor: value === 'X' ? colors.neon2 : colors.neon3,
+          textShadowRadius: 8,
+          textShadowOffset: { width: 0, height: 0 },
         },
         isWinningCell && styles.winningText
       ]}>
@@ -135,8 +124,6 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: 'center',
     alignItems: 'center',
-    flexBasis: '33.333%',
-    aspectRatio: 1,
     borderRightWidth: 2,
     borderBottomWidth: 2,
     borderColor: colors.cellBorder,
