@@ -1,0 +1,167 @@
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { BoardState, Player } from '../types/game';
+import { checkWinner } from '../utils/checkWinner';
+import { getInitialBoard } from '../utils/resetGame';
+
+const TURN_TIME_SECONDS = 15;
+const WINNING_SCORE = 3;
+
+interface UseGameReturn {
+  board: BoardState;
+  currentPlayer: Player;
+  round: number;
+  scores: { X: number; O: number };
+  ties: number;
+  timer: number;
+  roundWinner: Player | 'draw' | null;
+  gameWinner: Player | null;
+  winningLine: number[] | null;
+  isGameActive: boolean;
+  isMatchOver: boolean;
+  makeMove: (index: number) => void;
+  nextRound: () => void;
+  resetGame: () => void;
+}
+
+export const useGame = (): UseGameReturn => {
+  const [board, setBoard] = useState<BoardState>(getInitialBoard());
+  const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
+  const [round, setRound] = useState<number>(1);
+  const [scores, setScores] = useState<{ X: number; O: number }>({ X: 0, O: 0 });
+  const [ties, setTies] = useState<number>(0);
+  const [timer, setTimer] = useState<number>(TURN_TIME_SECONDS);
+  const [roundWinner, setRoundWinner] = useState<Player | 'draw' | null>(null);
+  const [gameWinner, setGameWinner] = useState<Player | null>(null);
+  const [winningLine, setWinningLine] = useState<number[] | null>(null);
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const isGameActive = roundWinner === null;
+  const isMatchOver = gameWinner !== null;
+
+  // Limpiar intervalo al desmontar
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  // Manejo del temporizador
+  useEffect(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    if (isGameActive && !isMatchOver) {
+      intervalRef.current = setInterval(() => {
+        setTimer((prev) => {
+          if (prev <= 1) {
+            // Tiempo agotado: cambiar turno
+            clearInterval(intervalRef.current!);
+            intervalRef.current = null;
+            changeTurn();
+            return TURN_TIME_SECONDS;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [currentPlayer, isGameActive, isMatchOver, round]);
+
+  const resetTimer = useCallback(() => {
+    setTimer(TURN_TIME_SECONDS);
+  }, []);
+
+  const changeTurn = useCallback(() => {
+    setCurrentPlayer((prev) => (prev === 'X' ? 'O' : 'X'));
+    resetTimer();
+  }, [resetTimer]);
+
+  const evaluateRoundEnd = useCallback(
+    (newBoard: BoardState) => {
+      const { winner, winningLine: line } = checkWinner(newBoard);
+      if (winner) {
+        setRoundWinner(winner);
+        setWinningLine(line);
+        if (winner !== 'draw') {
+          setScores((prev) => {
+            const newScores = {
+              ...prev,
+              [winner]: prev[winner] + 1,
+            };
+            if (newScores[winner] >= WINNING_SCORE) {
+              setGameWinner(winner);
+            }
+            return newScores;
+          });
+        } else {
+          setTies((prev) => prev + 1);
+        }
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        return true;
+      }
+      return false;
+    },
+    []
+  );
+
+  const makeMove = useCallback(
+    (index: number) => {
+      if (!isGameActive || isMatchOver || board[index] !== null) return;
+
+      const newBoard = [...board];
+      newBoard[index] = currentPlayer;
+      setBoard(newBoard);
+
+      const roundEnded = evaluateRoundEnd(newBoard);
+      if (roundEnded) return;
+
+      changeTurn();
+    },
+    [board, currentPlayer, isGameActive, isMatchOver, evaluateRoundEnd, changeTurn]
+  );
+
+  const nextRound = useCallback(() => {
+    if (isMatchOver) return;
+
+    setBoard(getInitialBoard());
+    setCurrentPlayer('X');
+    setRoundWinner(null);
+    setWinningLine(null);
+    setRound((prev) => prev + 1);
+    resetTimer();
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, [isMatchOver, resetTimer]);
+
+  const resetGame = useCallback(() => {
+    setBoard(getInitialBoard());
+    setCurrentPlayer('X');
+    setRound(1);
+    setScores({ X: 0, O: 0 });
+    setTies(0);
+    setRoundWinner(null);
+    setGameWinner(null);
+    setWinningLine(null);
+    resetTimer();
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, [resetTimer]);
+
+  return {
+    board,
+    currentPlayer,
+    round,
+    scores,
+    ties,
+    timer,
+    roundWinner,
+    gameWinner,
+    winningLine,
+    isGameActive,
+    isMatchOver,
+    makeMove,
+    nextRound,
+    resetGame,
+  };
+};
