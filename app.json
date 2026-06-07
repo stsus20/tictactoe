@@ -1,39 +1,36 @@
 {
   "expo": {
-    "name": "tictactoe",
+    "name": "Tic Tac Toe",
     "slug": "tictactoe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.tictactoe"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.stsus20.tictactoe"
+      "package": "com.yourcompany.tictactoe"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "eas": {
-        "projectId": "feaf85ac-def1-4311-be32-f3c1658d4b2f"
+      "router": {
+        "origin": false
       }
     },
-    "plugins": [
-      "expo-asset"
-    ]
+    "plugins": ["expo-router"]
   }
 }
