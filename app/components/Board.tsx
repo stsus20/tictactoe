@@ -5,7 +5,8 @@ import { BoardState } from '../types/game';
 import { colors } from '../constants/colors';
 
 const { width } = Dimensions.get('window');
-const BOARD_SIZE = Math.floor(width * 0.85);
+const BOARD_SIZE = Math.floor(width * 0.75);
+const CELL_SIZE = BOARD_SIZE / 3;
 
 interface BoardProps {
   board: BoardState;
@@ -39,18 +40,27 @@ const Board: React.FC<BoardProps> = React.memo(({ board, onCellPress, winningLin
         },
       ]}
     >
-      {board.map((value, index) => (
-        <Cell
-          key={index}
-          index={index}
-          value={value}
-          onPress={() => onCellPress(index)}
-          isWinningCell={winningLine?.includes(index) || false}
-          disabled={disabled || value !== null}
-        />
-      ))}
+      {board.map((value, index) => {
+        const row = Math.floor(index / 3);
+        const col = index % 3;
+        const left = col * CELL_SIZE;
+        const top = row * CELL_SIZE;
 
-      {/* internal grid handled by cell borders; overlay lines removed */}
+        return (
+          <Animated.View
+            key={index}
+            style={{ position: 'absolute', left, top, width: CELL_SIZE, height: CELL_SIZE }}
+          >
+            <Cell
+              index={index}
+              value={value}
+              onPress={() => onCellPress(index)}
+              isWinningCell={winningLine?.includes(index) || false}
+              disabled={disabled || value !== null}
+            />
+          </Animated.View>
+        );
+      })}
     </Animated.View>
   );
 });

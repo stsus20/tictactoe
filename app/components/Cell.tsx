@@ -152,9 +152,7 @@ const styles = StyleSheet.create({
   cell: {
     justifyContent: 'center',
     alignItems: 'center',
-    flexBasis: '33.3333%',
-    maxWidth: '33.3333%',
-    aspectRatio: 1,
+    // size controlled by parent wrapper (Board absolute grid)
     borderRightWidth: 1.5,
     borderBottomWidth: 1.5,
     borderColor: colors.neon1,
